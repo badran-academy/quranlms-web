@@ -1,0 +1,18 @@
+name: unpack
+on:
+  push:
+    paths: ['dist.b64']
+permissions:
+  contents: write
+jobs:
+  u:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          base64 -d dist.b64 > d.zip
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name .github ! -name dist.b64 ! -name d.zip -exec rm -rf {} +
+          unzip -q -o d.zip
+          rm d.zip
+          git config user.name "bot"; git config user.email "bot@users.noreply.github.com"
+          git add -A; git commit -m "Update site" || true; git push
